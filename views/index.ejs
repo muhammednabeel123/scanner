@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flight Price Tracker</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+  <div class="container mx-auto p-4">
+    <h1 class="text-3xl font-bold text-center mb-6">Flight Price Tracker</h1>
+
+    <!-- Message Display -->
+    <% if (message) { %>
+      <div class="<% if (message.includes('Failed')) { %>bg-red-100 text-red-700<% } else { %>bg-green-100 text-green-700<% } %> p-4 rounded mb-4"><%= message %></div>
+    <% } %>
+    <% if (userId) { %>
+      <div class="bg-green-100 text-green-700 p-4 rounded mb-4">
+        User ID: <%= userId %>
+        <button id="logoutBtn" class="ml-4 bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600">Logout</button>
+      </div>
+    <% } %>
+
+    <!-- Registration Form -->
+    <% if (!userId) { %>
+      <div class="bg-white p-6 rounded shadow-md mb-6">
+        <h2 class="text-xl font-semibold mb-4">Register / Login</h2>
+        <form action="/register" method="POST">
+          <div class="mb-4">
+            <label for="email" class="block text-sm font-medium">Email</label>
+            <input type="email" id="email" name="email" value="<%= email %>" required
+                   class="w-full p-2 border rounded">
+          </div>
+          <div class="mb-4">
+            <label for="phone" class="block text-sm font-medium">Phone (Optional)</label>
+            <input type="tel" id="phone" name="phone" value="<%= phone %>"
+                   class="w-full p-2 border rounded">
+          </div>
+          <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+            Submit
+          </button>
+        </form>
+      </div>
+    <% } %>
+
+    <!-- Flight Search Form -->
+    <div class="bg-white p-6 rounded shadow-md mb-6">
+      <h2 class="text-xl font-semibold mb-4">Search Flights</h2>
+      <form action="/search" method="POST">
+        <input type="hidden" name="userId" value="<%= userId %>">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div>
+            <label for="origin" class="block text-sm font-medium">Origin</label>
+            <input type="text" id="origin" name="origin" value="<%= origin %>" required
+                   class="w-full p-2 border rounded" placeholder="e.g., CCJ">
+          </div>
+          <div>
+            <label for="destination" class="block text-sm font-medium">Destination</label>
+            <input type="text" id="destination" name="destination" value="<%= destination %>"
+                   required class="w-full p-2 border rounded" placeholder="e.g., BOM">
+          </div>
+          <div>
+            <label for="departureDate" class="block text-sm font-medium">Departure Date</label>
+            <input type="date" id="departureDate" name="departureDate"
+                   value="<%= departureDate %>" required class="w-full p-2 border rounded">
+          </div>
+          <div>
+            <label for="adults" class="block text-sm font-medium">Adults</label>
+            <input type="number" id="adults" name="adults" value="<%= adults %>"
+                   min="1" required class="w-full p-2 border rounded">
+          </div>
+        </div>
+        <button type="submit" class="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+          Search
+        </button>
+      </form>
+    </div>
+
+    <!-- Flight Results -->
+    <% if (flights && flights.length > 0) { %>
+      <div class="bg-white p-6 rounded shadow-md mb-6">
+        <h2 class="text-xl font-semibold mb-4">Flight Results</h2>
+        <div class="space-y-4">
+          <% flights.forEach(flight => { %>
+            <div class="border p-4 rounded flex justify-between items-center">
+              <div>
+                <p><strong>Airline:</strong> <%= flight.airline %> <%= flight.flightNumber %></p>
+                <p><strong>Route:</strong> <%= flight.departure.airport %> to <%= flight.arrival.airport %></p>
+                <p><strong>Departure (IST):</strong> <%= flight.departure.timeIST %></p>
+                <p><strong>Arrival (IST):</strong> <%= flight.arrival.timeIST %></p>
+                <p><strong>Duration:</strong> <%= flight.duration %></p>
+                <p><strong>Price:</strong> <%= flight.price.total %> <%= flight.price.currency %></p>
+              </div>
+              <button class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 add-to-cart data-user-id="<%= userId %>"
+                      data-origin="<%= flight.departure.airport %>"
+                      data-destination="<%= flight.arrival.airport %>"
+                      data-departure-date="<%= flight.departure.timeIST.split(' ')[0] %>"
+                      data-adults="<%= adults %>"
+                      data-currency-code="<%= flight.price.currency %>"
+                      data-user-id="<%= userId %>"
+                      <%= !userId ? 'disabled' : '' %>>Add to Cart</button>
+            </div>
+          <% }) %>
+        </div>
+      </div>
+    <% } %>
+
+    <!-- Cart Section -->
+    <div class="bg-white p-6 rounded shadow-md">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-xl font-semibold">Cart</h2>
+        <% if (userId && cart && cart.length > 0) { %>
+          <button id="clearCartBtn" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
+            Clear Cart
+          </button>
+        <% } %>
+      </div>
+      <% if (cart && cart.length > 0) { %>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <% cart.forEach(flight => { %>
+            <div class="border p-4 rounded bg-gray-50">
+              <p><strong>Route:</strong> <%= flight.origin %> to <%= flight.destination %></p>
+              <p><strong>Departure:</strong> <%= flight.departure_date %></p>
+              <% if (flight.return_date) { %>
+                <p><strong>Return:</strong> <%= flight.return_date %></p>
+              <% } %>
+              <p><strong>Airline:</strong> <%= flight.airline %> <%= flight.flight_number %></p>
+              <p><strong>Price:</strong> <%= flight.price %> <%= flight.currency_code %></p>
+              <p><strong>Adults:</strong> <%= flight.adults %></p>
+            </div>
+          <% }) %>
+        </div>
+      <% } else { %>
+        <p class="text-gray-500">Your cart is empty. Add flights to track their prices.</p>
+      <% } %>
+    </div>
+  </div>
+
+  <script src="/client.js"></script>
+</body>
+</html>

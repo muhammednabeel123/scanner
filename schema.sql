@@ -1,0 +1,24 @@
+DROP TABLE IF EXISTS cart_flights CASCADE;
+DROP TABLE IF EXISTS users CASCADE;
+
+CREATE TABLE users (
+  id SERIAL PRIMARY KEY,
+  email VARCHAR(255) UNIQUE NOT NULL,
+  phone VARCHAR(20) UNIQUE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE cart_flights (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+  origin VARCHAR(3) NOT NULL,
+  destination VARCHAR(3) NOT NULL,
+  departure_date DATE NOT NULL,
+  return_date DATE,
+  adults INTEGER NOT NULL,
+  currency_code VARCHAR(3) DEFAULT 'INR',
+  airline VARCHAR(10),
+  flight_number VARCHAR(20),
+  price NUMERIC(10, 2) NOT NULL,
+  added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
