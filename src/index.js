@@ -504,9 +504,10 @@ cron.schedule('*/5 * * * *', async () => {
 
 async function startServer() {
   try {
-    const client = await pool.connect();
-    console.log('Successfully connected to PostgreSQL database');
-    client.release();
+    console.log('Starting server...');
+    // const client = await pool.connect();
+    // console.log('Successfully connected to PostgreSQL database');
+    // client.release();
 
     app.listen(port, async () => {
       console.log(`Server running on http://localhost:${port}`);
