@@ -1,39 +1,54 @@
-Node.js
+# Node.js
+node_modules/
+npm-debug.log
+yarn-error.log
 
-node_modules/ npm-debug.log yarn-error.log yarn.lock package-lock.json
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
 
-Environment variables
+# Logs
+*.log
+logs/
+.log
 
-.env .env.local .env.development.local .env.test.local .env.production.local
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
 
-Logs
+# OS-specific files
+.DS_Store
+Thumbs.db
 
-*.log logs/ .log.
+# Editor files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
 
-Temporary files
+# Build and distribution
+dist/
+build/
+coverage/
 
-*.tmp *.temp *.swp *.swo
+# Cache
+.cache/
+.eslintcache
+.parcel-cache
 
-OS-specific files
+# Database dumps or local data
+*.sql
+*.dump
+data/
 
-.DS_Store Thumbs.db
-
-Editor files
-
-.vscode/ .idea/ *.sublime-project *.sublime-workspace
-
-Build and distribution
-
-dist/ build/ coverage/
-
-Cache
-
-.cache/ .eslintcache .parcel-cache
-
-Database dumps or local data
-
-*.sql *.dump data/
-
-Miscellaneous
-
-*.bak *.backup *.pid *.seed *.pid.lock
+# Miscellaneous
+*.bak
+*.backup
+*.pid
+*.seed
+*.pid.lock
